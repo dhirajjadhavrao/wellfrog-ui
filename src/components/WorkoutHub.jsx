@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Dumbbell, Plus, CheckCircle2, Clock, Trash2 } from 'lucide-react';
+import { Dumbbell, Plus, CheckCircle2, Clock, Trash2, EyeOff } from 'lucide-react';
 import { api } from '../api';
 
-export default function WorkoutHub({ data, selectedDate, onRefresh }) {
+export default function WorkoutHub({ data, selectedDate, onRefresh, activity, onDeactivate }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [workoutType, setWorkoutType] = useState('Gym / Strength');
   const [durationMinutes, setDurationMinutes] = useState('45');
@@ -75,13 +75,24 @@ export default function WorkoutHub({ data, selectedDate, onRefresh }) {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-orange-600 hover:bg-orange-700 rounded-lg shadow-xs transition"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          {showAddForm ? 'Close' : 'Log Workout'}
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-orange-600 hover:bg-orange-700 rounded-lg shadow-xs transition"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            {showAddForm ? 'Close' : 'Log Workout'}
+          </button>
+          {onDeactivate && (
+            <button
+              onClick={() => onDeactivate(activity)}
+              className="p-1.5 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition"
+              title="Deactivate and hide from dashboard (keeps all data safe)"
+            >
+              <EyeOff className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* KPI Status Strip */}

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Briefcase, CheckSquare, Square, Save, Plus } from 'lucide-react';
+import { Briefcase, CheckSquare, Square, Save, Plus, EyeOff } from 'lucide-react';
 import { api } from '../api';
 
-export default function WorkSessionHub({ data, selectedDate, onRefresh }) {
+export default function WorkSessionHub({ data, selectedDate, onRefresh, activity, onDeactivate }) {
   const [hoursWorked, setHoursWorked] = useState('0');
   const [tasksText, setTasksText] = useState('');
   const [notes, setNotes] = useState('');
@@ -69,7 +69,7 @@ export default function WorkSessionHub({ data, selectedDate, onRefresh }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           {saveSuccess && (
             <span className="text-xs text-emerald-600 font-semibold animate-in fade-in">Saved! ✓</span>
           )}
@@ -81,6 +81,15 @@ export default function WorkSessionHub({ data, selectedDate, onRefresh }) {
             <Save className="w-3.5 h-3.5" />
             {isSubmitting ? 'Saving...' : 'Save Work'}
           </button>
+          {onDeactivate && (
+            <button
+              onClick={() => onDeactivate(activity)}
+              className="p-1.5 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition"
+              title="Deactivate and hide from dashboard (keeps all data safe)"
+            >
+              <EyeOff className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 

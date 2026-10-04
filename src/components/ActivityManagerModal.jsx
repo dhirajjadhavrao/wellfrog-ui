@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Layers, FolderPlus, Tag, Check, AlertCircle } from 'lucide-react';
+import { X, Plus, Trash2, Layers, FolderPlus, Check, AlertCircle, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { api } from '../api';
 
 export default function ActivityManagerModal({ isOpen, onClose, onActivityChanged }) {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [filterTab, setFilterTab] = useState('all'); // 'all', 'active', 'deactivated'
 
   // Form states
   const [showAddForm, setShowAddForm] = useState(false);
@@ -39,6 +40,15 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
 
   const rootActivities = activities.filter((a) => !a.parentId);
   const getSubActivities = (rootId) => activities.filter((a) => a.parentId === rootId);
+
+  const activeRoots = rootActivities.filter((a) => a.active !== false);
+  const deactivatedRoots = rootActivities.filter((a) => a.active === false);
+
+  const displayedRoots = filterTab === 'active'
+    ? activeRoots
+    : filterTab === 'deactivated'
+    ? deactivatedRoots
+    : rootActivities;
 
   const handleOpenAddSub = (parentActivity) => {
     setParentId(parentActivity.id.toString());
@@ -75,12 +85,23 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
     }
   };
 
-  const handleDeleteActivity = async (id, actName) => {
-    if (!window.confirm(`Delete "${actName}" and any associated sub-activities?`)) {
+  const handleToggleActive = async (activity) => {
+    try {
+      const nextActive = !(activity.active !== false);
+      await api.toggleActivityActive(activity.id, nextActive);
+      await fetchActivities();
+      if (onActivityChanged) onActivityChanged();
+    } catch (err) {
+      alert('Error updating activity status: ' + err.message);
+    }
+  };
+
+  const handlePermanentDelete = async (id, actName) => {
+    if (!window.confirm(`Permanently delete "${actName}" and all associated data/logs? This action cannot be undone.`)) {
       return;
     }
     try {
-      await api.deleteActivity(id);
+      await api.deleteActivity(id, true);
       await fetchActivities();
       if (onActivityChanged) onActivityChanged();
     } catch (err) {
@@ -88,9 +109,13 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
     }
   };
 
+  const isBuiltIn = (act) => {
+    return ['FINANCE', 'LOANS', 'WORKOUT', 'WORK_TIME', 'CAREER'].includes(act.categoryType);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
         
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
@@ -99,8 +124,8 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
               <Layers className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Activities &amp; Sub-Activities</h2>
-              <p className="text-xs text-slate-500">Configure tracked services, routines, and custom sub-tasks</p>
+              <h2 className="text-lg font-bold text-slate-900">Activity Configuration &amp; Manager</h2>
+              <p className="text-xs text-slate-500">Configure dashboard tiles, activate/deactivate modules, and manage custom tracking</p>
             </div>
           </div>
           <button
@@ -112,7 +137,7 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-5">
           {error && (
             <div className="p-3 bg-red-50 text-red-700 text-sm rounded-xl border border-red-200 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -120,29 +145,38 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
             </div>
           )}
 
+          {/* Quick Info Banner */}
+          <div className="p-3.5 bg-blue-50/70 border border-blue-200/80 rounded-xl flex items-start gap-3 text-xs text-blue-900">
+            <Sparkles className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+            <div>
+              <span className="font-bold">Full Dashboard Configurability: </span>
+              Toggle any activity to hide or display its tile on the dashboard. Deactivating an activity never deletes your historical logs or entries.
+            </div>
+          </div>
+
           {/* Add form toggler */}
           {!showAddForm ? (
-            <div className="flex justify-between items-center bg-forest-50/70 border border-forest-200/80 rounded-xl p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-forest-50/70 border border-forest-200/80 rounded-xl p-4">
               <div>
-                <h4 className="text-sm font-bold text-forest-900">Custom Activity or Sub-activity</h4>
-                <p className="text-xs text-forest-700">Add personal hobbies, study routines, projects, or side-hustles</p>
+                <h4 className="text-sm font-bold text-forest-900">Add New Activity Tile</h4>
+                <p className="text-xs text-forest-700">Create custom tracking cards for personal habits, studies, reading, or projects</p>
               </div>
               <button
                 onClick={() => {
                   setParentId('');
                   setShowAddForm(true);
                 }}
-                className="flex items-center gap-1.5 px-3 py-2 bg-forest-600 hover:bg-forest-700 text-white font-semibold text-xs rounded-xl shadow-xs transition"
+                className="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-forest-600 hover:bg-forest-700 text-white font-semibold text-xs rounded-xl shadow-xs transition"
               >
                 <Plus className="w-4 h-4" />
-                Add New Activity
+                <span>Create New Activity</span>
               </button>
             </div>
           ) : (
             <form onSubmit={handleCreateActivity} className="bg-slate-50 border border-slate-300/80 rounded-2xl p-5 space-y-4">
               <div className="flex items-center justify-between pb-2 border-b border-slate-200">
                 <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  {parentId ? '➕ Add Sub-Activity' : '➕ Create Root Activity'}
+                  {parentId ? '➕ Add Sub-Activity' : '➕ Create New Activity Tile'}
                 </span>
                 <button
                   type="button"
@@ -159,10 +193,10 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
                   <input
                     type="text"
                     required
-                    placeholder="e.g., Reading, DSA Prep, Badminton"
+                    placeholder="e.g., Reading, DSA Prep, Guitar, Meditation"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-forest-500 focus:outline-none"
+                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-forest-500 focus:outline-none bg-white"
                   />
                 </div>
 
@@ -173,7 +207,7 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
                     onChange={(e) => setParentId(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-forest-500 focus:outline-none bg-white"
                   >
-                    <option value="">-- None (Top-Level Root) --</option>
+                    <option value="">-- None (Top-Level Dashboard Tile) --</option>
                     {rootActivities.map((act) => (
                       <option key={act.id} value={act.id}>
                         {act.icon} {act.name}
@@ -190,10 +224,10 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
                       maxLength={4}
                       value={icon}
                       onChange={(e) => setIcon(e.target.value)}
-                      className="w-16 px-3 py-2 text-center text-lg border border-slate-300 rounded-xl focus:ring-2 focus:ring-forest-500 focus:outline-none"
+                      className="w-16 px-3 py-2 text-center text-lg border border-slate-300 rounded-xl focus:ring-2 focus:ring-forest-500 focus:outline-none bg-white"
                     />
                     <div className="flex items-center gap-1.5 overflow-x-auto text-base">
-                      {['📚', '💻', '🧘', '🎸', '🏃', '💰', '🎯', '🥗'].map((emoji) => (
+                      {['📚', '💻', '🧘', '🎸', '🏃', '💰', '🎯', '🥗', '⚡', '☕'].map((emoji) => (
                         <button
                           key={emoji}
                           type="button"
@@ -214,11 +248,11 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
                     onChange={(e) => setUnit(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-forest-500 focus:outline-none bg-white"
                   >
-                    <option value="MINUTES">Minutes</option>
-                    <option value="HOURS">Hours</option>
-                    <option value="COUNT">Count / Reps</option>
+                    <option value="MINUTES">Minutes (Duration)</option>
+                    <option value="HOURS">Hours (Duration)</option>
+                    <option value="COUNT">Count / Reps / Items</option>
                     <option value="AMOUNT">Amount (₹)</option>
-                    <option value="CHECK">Checklist / Done</option>
+                    <option value="CHECK">Checklist (Done / Pending)</option>
                   </select>
                 </div>
               </div>
@@ -236,91 +270,172 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
                   disabled={isSubmitting}
                   className="px-4 py-2 text-xs font-bold text-white bg-forest-600 hover:bg-forest-700 rounded-xl shadow-xs transition"
                 >
-                  {isSubmitting ? 'Saving...' : 'Save Activity'}
+                  {isSubmitting ? 'Saving...' : 'Save & Add to Dashboard'}
                 </button>
               </div>
             </form>
           )}
 
-          {/* Activity Tree / List */}
-          <div>
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
-              Your Activities &amp; Sub-Hierarchies
+          {/* Filter Pills */}
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+              Configured Activities ({rootActivities.length})
             </h3>
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+              <button
+                onClick={() => setFilterTab('all')}
+                className={`px-3 py-1 rounded-lg transition ${
+                  filterTab === 'all' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                All ({rootActivities.length})
+              </button>
+              <button
+                onClick={() => setFilterTab('active')}
+                className={`px-3 py-1 rounded-lg transition ${
+                  filterTab === 'active' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                Active ({activeRoots.length})
+              </button>
+              <button
+                onClick={() => setFilterTab('deactivated')}
+                className={`px-3 py-1 rounded-lg transition ${
+                  filterTab === 'deactivated' ? 'bg-white text-slate-800 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                Deactivated ({deactivatedRoots.length})
+              </button>
+            </div>
+          </div>
 
+          {/* Activity List */}
+          <div>
             {loading ? (
               <div className="py-8 text-center text-sm text-slate-400">Loading activities...</div>
-            ) : rootActivities.length === 0 ? (
-              <div className="py-8 text-center text-sm text-slate-400">
-                No activities found. First login auto-seeds default activities.
+            ) : displayedRoots.length === 0 ? (
+              <div className="py-8 text-center text-sm text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                {filterTab === 'deactivated'
+                  ? 'No deactivated activities. All activities are currently active on your dashboard.'
+                  : 'No activities found matching this filter.'}
               </div>
             ) : (
               <div className="space-y-3">
-                {rootActivities.map((act) => {
+                {displayedRoots.map((act) => {
                   const subs = getSubActivities(act.id);
+                  const isActive = act.active !== false;
+
                   return (
                     <div
                       key={act.id}
-                      className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs hover:border-slate-300 transition"
+                      className={`border rounded-2xl overflow-hidden transition ${
+                        isActive
+                          ? 'border-slate-200 bg-white shadow-2xs hover:border-slate-300'
+                          : 'border-slate-200/60 bg-slate-50/70 opacity-80'
+                      }`}
                     >
-                      {/* Root Item */}
-                      <div className="p-3.5 flex items-center justify-between bg-slate-50/70 border-b border-slate-100">
+                      {/* Root Item Bar */}
+                      <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <span className="text-xl w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 shadow-2xs">
+                          <span
+                            className="text-xl w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 border border-slate-200 shadow-2xs shrink-0"
+                            style={{ color: act.color || '#386641' }}
+                          >
                             {act.icon || '📌'}
                           </span>
                           <div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <span className="text-sm font-bold text-slate-900">{act.name}</span>
-                              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-slate-200/80 text-slate-700">
-                                {act.categoryType || 'SYSTEM'}
+                              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-slate-200/80 text-slate-700">
+                                {act.categoryType || 'CUSTOM'}
                               </span>
+                              {/* Status Badge */}
+                              {isActive ? (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                                  Active on Dashboard
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-600 border border-slate-300">
+                                  <EyeOff className="w-3 h-3" /> Deactivated (Hidden)
+                                </span>
+                              )}
                             </div>
-                            <span className="text-xs text-slate-500">Unit: {act.unit || 'Standard'}</span>
+                            <span className="text-xs text-slate-500 block mt-0.5">
+                              Measurement Unit: <span className="font-semibold text-slate-700">{act.unit || 'Standard'}</span>
+                              {subs.length > 0 && ` • ${subs.length} sub-activities`}
+                            </span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-1.5">
+                        {/* Actions & Activate/Deactivate Toggle Switch */}
+                        <div className="flex items-center gap-3 self-end sm:self-auto">
+                          {/* Toggle Switch */}
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-semibold text-slate-500 hidden sm:inline">
+                              {isActive ? 'Active' : 'Deactivated'}
+                            </span>
+                            <button
+                              type="button"
+                              role="switch"
+                              aria-checked={isActive}
+                              onClick={() => handleToggleActive(act)}
+                              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                isActive ? 'bg-forest-600' : 'bg-slate-300'
+                              }`}
+                              title={
+                                isActive
+                                  ? 'Click to deactivate (hides from dashboard, keeps data safe)'
+                                  : 'Click to activate (restores to dashboard with data)'
+                              }
+                            >
+                              <span
+                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                                  isActive ? 'translate-x-5' : 'translate-x-0'
+                                }`}
+                              />
+                            </button>
+                          </div>
+
+                          {/* Sub-activity button */}
                           <button
                             onClick={() => handleOpenAddSub(act)}
-                            className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-forest-700 hover:bg-forest-100/70 rounded-lg transition"
-                            title="Add sub-activity under this"
+                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-forest-700 hover:bg-forest-50 border border-forest-200/80 rounded-xl transition"
+                            title="Add sub-activity under this activity"
                           >
                             <FolderPlus className="w-3.5 h-3.5" />
                             <span>+ Sub</span>
                           </button>
 
-                          {act.categoryType !== 'FINANCE' &&
-                            act.categoryType !== 'WORKOUT' &&
-                            act.categoryType !== 'WORK' &&
-                            act.categoryType !== 'CAREER' && (
-                              <button
-                                onClick={() => handleDeleteActivity(act.id, act.name)}
-                                className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg transition hover:bg-red-50"
-                                title="Delete Activity"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            )}
+                          {/* Permanent Delete for Custom activities only */}
+                          {!isBuiltIn(act) && (
+                            <button
+                              onClick={() => handlePermanentDelete(act.id, act.name)}
+                              className="p-1.5 text-slate-400 hover:text-red-600 rounded-xl transition hover:bg-red-50 border border-transparent hover:border-red-200"
+                              title="Permanently delete activity and logs"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                         </div>
                       </div>
 
-                      {/* Sub-activities */}
+                      {/* Sub-activities List */}
                       {subs.length > 0 && (
-                        <div className="p-3 bg-white pl-12 space-y-2 border-t border-slate-100">
+                        <div className="p-3 bg-white pl-8 sm:pl-14 space-y-2 border-t border-slate-100">
                           {subs.map((sub) => (
                             <div
                               key={sub.id}
-                              className="flex items-center justify-between p-2 rounded-lg bg-slate-50/80 border border-slate-100 hover:bg-slate-100/70 transition"
+                              className="flex items-center justify-between p-2 rounded-xl bg-slate-50/80 border border-slate-200/60 hover:bg-slate-100/70 transition"
                             >
                               <div className="flex items-center gap-2.5">
-                                <span className="text-sm">{sub.icon || '🔹'}</span>
+                                <span className="text-base">{sub.icon || '🔹'}</span>
                                 <span className="text-xs font-semibold text-slate-800">{sub.name}</span>
                                 <span className="text-[10px] text-slate-400 font-medium">({sub.unit})</span>
                               </div>
                               <button
-                                onClick={() => handleDeleteActivity(sub.id, sub.name)}
-                                className="p-1 text-slate-400 hover:text-red-600 rounded transition"
+                                onClick={() => handlePermanentDelete(sub.id, sub.name)}
+                                className="p-1 text-slate-400 hover:text-red-600 rounded-lg transition"
                                 title="Delete Sub-activity"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -338,9 +453,9 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+        <div className="px-6 py-3.5 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
           <p className="text-xs text-slate-500">
-            All user data and activity logs are strictly isolated per account.
+            Deactivating an activity keeps all historical logs safely in your database.
           </p>
           <button
             onClick={onClose}

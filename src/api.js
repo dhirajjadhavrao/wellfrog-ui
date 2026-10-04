@@ -86,8 +86,17 @@ export const api = {
   updateJob: (id, data) => request(`/jobs/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteJob: (id) => request(`/jobs/${id}`, { method: 'DELETE' }),
 
-  // Custom Activities & Sub-Activities
+  // Activities & Sub-Activities
   getActivities: () => request('/activities'),
   addActivity: (data) => request('/activities', { method: 'POST', body: JSON.stringify(data) }),
-  deleteActivity: (id) => request(`/activities/${id}`, { method: 'DELETE' }),
+  toggleActivityActive: (id, active) => request(`/activities/${id}/toggle-active`, {
+    method: 'PUT',
+    body: active !== undefined ? JSON.stringify({ active }) : undefined,
+  }),
+  deleteActivity: (id, permanent = false) => request(`/activities/${id}${permanent ? '?permanent=true' : ''}`, { method: 'DELETE' }),
+
+  // Custom Activity Progress Logs
+  getActivityLogs: (date) => request(`/activity-logs${date ? `?date=${date}` : ''}`),
+  logActivityProgress: (data) => request('/activity-logs', { method: 'POST', body: JSON.stringify(data) }),
+  deleteActivityLog: (id) => request(`/activity-logs/${id}`, { method: 'DELETE' }),
 };

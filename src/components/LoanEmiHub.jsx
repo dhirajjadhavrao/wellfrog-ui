@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Landmark, Plus, CheckCircle2, AlertCircle, Clock, Trash2 } from 'lucide-react';
+import { Landmark, Plus, CheckCircle2, AlertCircle, Clock, Trash2, EyeOff } from 'lucide-react';
 import { api } from '../api';
 
-export default function LoanEmiHub({ data, onRefresh }) {
+export default function LoanEmiHub({ data, onRefresh, activity, onDeactivate }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [loanName, setLoanName] = useState('');
   const [emiAmount, setEmiAmount] = useState('');
@@ -83,13 +83,24 @@ export default function LoanEmiHub({ data, onRefresh }) {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          {showAddForm ? 'Close' : 'Add Loan'}
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            {showAddForm ? 'Close' : 'Add Loan'}
+          </button>
+          {onDeactivate && (
+            <button
+              onClick={() => onDeactivate(activity)}
+              className="p-1.5 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition"
+              title="Deactivate and hide from dashboard (keeps all data safe)"
+            >
+              <EyeOff className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Metric Cards */}

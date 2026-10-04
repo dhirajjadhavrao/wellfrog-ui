@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Wallet, Plus, Trash2, ArrowUpRight, Wifi, Banknote } from 'lucide-react';
+import { Wallet, Plus, Trash2, ArrowUpRight, Wifi, Banknote, EyeOff } from 'lucide-react';
 import { api } from '../api';
 
-export default function FinanceHub({ data, selectedDate, onRefresh }) {
+export default function FinanceHub({ data, selectedDate, onRefresh, activity, onDeactivate }) {
   const [amount, setAmount] = useState('');
   const [mode, setMode] = useState('ONLINE');
   const [category, setCategory] = useState('Food & Dining');
@@ -77,13 +77,24 @@ export default function FinanceHub({ data, selectedDate, onRefresh }) {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-forest-600 hover:bg-forest-700 rounded-lg shadow-xs transition"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          {showAddForm ? 'Close' : 'Add Expense'}
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-forest-600 hover:bg-forest-700 rounded-lg shadow-xs transition"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            {showAddForm ? 'Close' : 'Add Expense'}
+          </button>
+          {onDeactivate && (
+            <button
+              onClick={() => onDeactivate(activity)}
+              className="p-1.5 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition"
+              title="Deactivate and hide from dashboard (keeps all data safe)"
+            >
+              <EyeOff className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* KPI Metric Cards */}

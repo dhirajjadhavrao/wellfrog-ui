@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Target, Plus, Briefcase, Calendar, Trash2, ChevronDown, CheckCircle2, Clock } from 'lucide-react';
+import { Target, Plus, Briefcase, Calendar, Trash2, ChevronDown, CheckCircle2, Clock, EyeOff } from 'lucide-react';
 import { api } from '../api';
 
-export default function NaukriHub({ data, onRefresh }) {
+export default function NaukriHub({ data, onRefresh, activity, onDeactivate }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [company, setCompany] = useState('');
   const [role, setRole] = useState('Senior Java Engineer');
@@ -88,13 +88,24 @@ export default function NaukriHub({ data, onRefresh }) {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          {showAddForm ? 'Close' : 'Add Job'}
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            {showAddForm ? 'Close' : 'Add Job'}
+          </button>
+          {onDeactivate && (
+            <button
+              onClick={() => onDeactivate(activity)}
+              className="p-1.5 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition"
+              title="Deactivate and hide from dashboard (keeps all data safe)"
+            >
+              <EyeOff className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* KPI Status Strip (Matching Finance, Loan, Workout Hubs) */}
