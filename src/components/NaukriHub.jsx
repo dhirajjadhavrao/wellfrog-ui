@@ -75,23 +75,23 @@ export default function NaukriHub({ data, onRefresh, activity, onDeactivate }) {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col h-full">
+    <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col h-full hover:border-slate-300 transition duration-150">
       {/* Activity Card Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+      <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-100">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
             <Target className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-slate-900">Naukri &amp; Career</h2>
-            <p className="text-xs text-slate-500">Job Pipeline &amp; Interview Tracker</p>
+            <h2 className="text-sm sm:text-base font-bold text-slate-900">Naukri &amp; Career</h2>
+            <p className="text-[11px] sm:text-xs text-slate-500">Job Pipeline &amp; Interview Tracker</p>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-lg shadow-xs transition"
           >
             <Plus className="w-3.5 h-3.5" />
             {showAddForm ? 'Close' : 'Add Job'}
@@ -99,7 +99,7 @@ export default function NaukriHub({ data, onRefresh, activity, onDeactivate }) {
           {onDeactivate && (
             <button
               onClick={() => onDeactivate(activity)}
-              className="p-1.5 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition"
+              className="p-1.5 sm:p-2 text-slate-400 hover:text-amber-700 hover:bg-amber-50 active:scale-95 rounded-lg transition"
               title="Deactivate and hide from dashboard (keeps all data safe)"
             >
               <EyeOff className="w-4 h-4" />
@@ -109,24 +109,24 @@ export default function NaukriHub({ data, onRefresh, activity, onDeactivate }) {
       </div>
 
       {/* KPI Status Strip (Matching Finance, Loan, Workout Hubs) */}
-      <div className="grid grid-cols-3 gap-2 my-4">
-        <div className="bg-blue-50/60 rounded-xl p-2.5 border border-blue-100/80 text-center">
-          <div className="text-[10px] font-semibold text-blue-700 uppercase tracking-wider">Applied</div>
-          <div className="text-base font-bold text-blue-900 mt-0.5">{appliedCount}</div>
+      <div className="grid grid-cols-3 gap-1.5 sm:gap-2 my-3 sm:my-4">
+        <div className="bg-blue-50/60 rounded-xl p-2 sm:p-2.5 border border-blue-100/80 text-center">
+          <div className="text-[9px] sm:text-[10px] font-semibold text-blue-700 uppercase tracking-wider">Applied</div>
+          <div className="text-sm sm:text-base font-bold text-blue-900 mt-0.5">{appliedCount}</div>
         </div>
-        <div className="bg-amber-50/60 rounded-xl p-2.5 border border-amber-100/80 text-center">
-          <div className="text-[10px] font-semibold text-amber-700 uppercase tracking-wider">Interview</div>
-          <div className="text-base font-bold text-amber-900 mt-0.5">{interviewCount}</div>
+        <div className="bg-amber-50/60 rounded-xl p-2 sm:p-2.5 border border-amber-100/80 text-center">
+          <div className="text-[9px] sm:text-[10px] font-semibold text-amber-700 uppercase tracking-wider">Interview</div>
+          <div className="text-sm sm:text-base font-bold text-amber-900 mt-0.5">{interviewCount}</div>
         </div>
-        <div className="bg-emerald-50/60 rounded-xl p-2.5 border border-emerald-100/80 text-center">
-          <div className="text-[10px] font-semibold text-emerald-700 uppercase tracking-wider">Offers</div>
-          <div className="text-base font-bold text-emerald-900 mt-0.5">{offerCount}</div>
+        <div className="bg-emerald-50/60 rounded-xl p-2 sm:p-2.5 border border-emerald-100/80 text-center">
+          <div className="text-[9px] sm:text-[10px] font-semibold text-emerald-700 uppercase tracking-wider">Offers</div>
+          <div className="text-sm sm:text-base font-bold text-emerald-900 mt-0.5">{offerCount}</div>
         </div>
       </div>
 
       {/* Add Job Form Drawer */}
       {showAddForm && (
-        <form onSubmit={handleAddJob} className="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4 space-y-3 animate-in fade-in duration-150">
+        <form onSubmit={handleAddJob} className="bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200 mb-4 space-y-3 animate-in fade-in duration-150">
           <div className="text-xs font-bold text-slate-800 uppercase tracking-wider">Log Job Application</div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -266,7 +266,7 @@ export default function NaukriHub({ data, onRefresh, activity, onDeactivate }) {
 
                   <button
                     onClick={() => handleDelete(job.id)}
-                    className="p-1.5 text-slate-300 hover:text-red-600 rounded-lg hover:bg-red-50 transition"
+                    className="p-2 text-slate-300 hover:text-red-600 active:scale-90 rounded-lg hover:bg-red-50 transition"
                     title="Delete Job Entry"
                   >
                     <Trash2 className="w-3.5 h-3.5" />

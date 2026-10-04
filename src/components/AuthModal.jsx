@@ -320,11 +320,12 @@ export default function AuthModal({ initialMode = 'signup', onAuthSuccess, onClo
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="relative w-full max-w-md">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="relative w-full max-w-md bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden pb-safe animate-in slide-in-from-bottom sm:zoom-in-95 duration-200">
+        <div className="w-12 h-1 bg-slate-300 rounded-full mx-auto mt-2.5 mb-1 sm:hidden" />
         <button
           onClick={onClose}
-          className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white text-slate-400 hover:text-slate-700 shadow-md flex items-center justify-center z-10 font-bold text-sm"
+          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-700 shadow-xs flex items-center justify-center z-10 font-bold text-sm"
         >
           ✕
         </button>

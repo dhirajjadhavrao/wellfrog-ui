@@ -115,18 +115,21 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl max-w-3xl w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 animate-in slide-in-from-bottom sm:zoom-in-95 duration-200">
         
+        {/* Mobile Drag Indicator */}
+        <div className="w-12 h-1 bg-slate-300 rounded-full mx-auto mt-2.5 mb-1 sm:hidden" />
+
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-forest-600 text-white flex items-center justify-center shadow-xs">
-              <Layers className="w-5 h-5" />
+            <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-xl bg-forest-600 text-white flex items-center justify-center shadow-xs shrink-0">
+              <Layers className="w-4 sm:w-5 h-4 sm:h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Activity Configuration &amp; Manager</h2>
-              <p className="text-xs text-slate-500">Configure dashboard tiles, activate/deactivate modules, and manage custom tracking</p>
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">Activity Configuration</h2>
+              <p className="text-[11px] sm:text-xs text-slate-500">Configure dashboard tiles &amp; custom habits</p>
             </div>
           </div>
           <button
@@ -138,7 +141,7 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5">
           {error && (
             <div className="p-3 bg-red-50 text-red-700 text-sm rounded-xl border border-red-200 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -456,13 +459,13 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3.5 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
-          <p className="text-xs text-slate-500">
-            Deactivating an activity keeps all historical logs safely in your database.
+        <div className="px-4 sm:px-6 py-3.5 pb-safe border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+          <p className="text-[11px] sm:text-xs text-slate-500">
+            Deactivating keeps all historical logs safely in database.
           </p>
           <button
             onClick={onClose}
-            className="px-4 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 rounded-xl transition shadow-2xs"
+            className="px-4 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 rounded-xl transition shadow-2xs active:scale-95"
           >
             Close
           </button>

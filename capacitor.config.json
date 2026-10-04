@@ -1,0 +1,13 @@
+{
+  "appId": "com.wellfrog.app",
+  "appName": "Wellfrog",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "backgroundColor": "#166534",
+    "allowMixedContent": true
+  }
+}

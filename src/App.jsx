@@ -9,6 +9,7 @@ import NaukriHub from './components/NaukriHub';
 import CustomActivityHub from './components/CustomActivityHub';
 import ActivityManagerModal from './components/ActivityManagerModal';
 import ActivityIcon from './components/ActivityIcon';
+import MobileBottomNav from './components/MobileBottomNav';
 import { api, getCurrentUser, getToken, clearAuth, setAuth } from './api';
 import { 
   Sparkles, 
@@ -35,6 +36,12 @@ export default function App() {
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState('signup');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const handleLogout = () => {
+    clearAuth();
+    setUser(null);
+    setDashboardData(null);
+  };
 
   // Load Dashboard Data
   const loadDashboard = useCallback(async () => {
@@ -156,7 +163,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 sm:pb-8 space-y-4 sm:space-y-6">
         {!user ? (
           /* Unauthenticated Landing / Sign In & Sign Up Screen */
           <div className="py-6 space-y-10 animate-in fade-in duration-300">
@@ -500,7 +507,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto py-6 border-t border-slate-200 bg-white text-center text-xs text-slate-500">
+      <footer className="mt-auto py-6 pb-24 sm:pb-6 border-t border-slate-200 bg-white text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2 font-medium">
             <span>🐸 Wellfrog</span>
@@ -512,6 +519,17 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Mobile Bottom Navigation Bar (sm:hidden) */}
+      <MobileBottomNav
+        user={user}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        activeCount={activeRootActivities.length}
+        onOpenActivityManager={() => setIsActivityModalOpen(true)}
+        onOpenAuth={handleOpenAuth}
+        onLogout={handleLogout}
+      />
 
       {/* Activity & Sub-Activity Manager Modal */}
       <ActivityManagerModal

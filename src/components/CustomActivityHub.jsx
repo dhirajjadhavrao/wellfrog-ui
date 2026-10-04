@@ -89,25 +89,25 @@ export default function CustomActivityHub({
   const themeColor = activity?.color || '#386641';
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between hover:border-slate-300 transition duration-150">
+    <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:border-slate-300 transition duration-150">
       <div>
         {/* Card Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-100">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-xl font-bold shadow-2xs border border-slate-200/60"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-lg sm:text-xl font-bold shadow-2xs border border-slate-200/60"
               style={{ backgroundColor: `${themeColor}15`, color: themeColor }}
             >
-              <ActivityIcon icon={activity?.icon} categoryType={activity?.categoryType} className="w-5 h-5" fallback="⚡" />
+              <ActivityIcon icon={activity?.icon} categoryType={activity?.categoryType} className="w-4 h-4 sm:w-5 sm:h-5" fallback="⚡" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-slate-900">{activity?.name || 'Activity'}</h2>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h2 className="text-sm sm:text-base font-bold text-slate-900">{activity?.name || 'Activity'}</h2>
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60">
                   {activity?.unit || 'Custom'}
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-[11px] sm:text-xs text-slate-500">
                 {subActivities.length > 0 ? `${subActivities.length} sub-activities configured` : 'Configurable Activity Hub'}
               </p>
             </div>
@@ -116,7 +116,7 @@ export default function CustomActivityHub({
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white rounded-lg shadow-xs transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white rounded-lg shadow-xs active:scale-95 transition"
               style={{ backgroundColor: themeColor }}
             >
               <Plus className="w-3.5 h-3.5" />
@@ -125,7 +125,7 @@ export default function CustomActivityHub({
 
             <button
               onClick={handleDeactivate}
-              className="p-1.5 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition"
+              className="p-1.5 sm:p-2 text-slate-400 hover:text-amber-700 hover:bg-amber-50 active:scale-95 rounded-lg transition"
               title="Deactivate and hide from dashboard (keeps all data safe)"
             >
               <EyeOff className="w-4 h-4" />
@@ -135,24 +135,24 @@ export default function CustomActivityHub({
 
         {/* KPI Status Strip */}
         <div
-          className="flex items-center justify-between my-4 p-3 rounded-xl border"
+          className="flex items-center justify-between my-3 sm:my-4 p-2.5 sm:p-3 rounded-xl border"
           style={{ backgroundColor: `${themeColor}08`, borderColor: `${themeColor}20` }}
         >
           <div className="flex items-center gap-2">
             {isCompleted ? (
-              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full">
+              <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-emerald-800 bg-emerald-100 px-2 sm:px-2.5 py-1 rounded-full">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Completed Today
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full">
+              <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-slate-600 bg-slate-100 px-2 sm:px-2.5 py-1 rounded-full">
                 <Clock className="w-3.5 h-3.5" /> Not Logged Yet
               </div>
             )}
           </div>
 
           <div className="text-right">
-            <span className="text-[11px] font-medium text-slate-500 block">Today's Progress</span>
-            <span className="text-base font-extrabold text-slate-900" style={{ color: themeColor }}>
+            <span className="text-[10px] sm:text-[11px] font-medium text-slate-500 block">Today's Progress</span>
+            <span className="text-sm sm:text-base font-extrabold text-slate-900" style={{ color: themeColor }}>
               {isCompleted ? formatUnitValue(totalValue, activity?.unit) : '0'}
             </span>
           </div>
@@ -273,7 +273,7 @@ export default function CustomActivityHub({
 
                     <button
                       onClick={() => handleDeleteLog(log.id)}
-                      className="p-1 text-slate-300 hover:text-red-600 transition"
+                      className="p-2 text-slate-300 hover:text-red-600 active:scale-90 rounded-lg hover:bg-red-50 transition"
                       title="Delete Entry"
                     >
                       <Trash2 className="w-3.5 h-3.5" />

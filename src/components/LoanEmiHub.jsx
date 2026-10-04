@@ -69,27 +69,27 @@ export default function LoanEmiHub({ data, onRefresh, activity, onDeactivate }) 
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+    <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
       
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+      <div className="flex items-center justify-between pb-3.5 sm:pb-4 border-b border-slate-100">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold">
+          <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold shrink-0">
             <Landmark className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-slate-900">Loans &amp; EMIs</h2>
-            <p className="text-xs text-slate-500">Monthly Obligations Tracker</p>
+            <h2 className="text-sm sm:text-base font-bold text-slate-900">Loans &amp; EMIs</h2>
+            <p className="text-[11px] sm:text-xs text-slate-500">Monthly Obligations Tracker</p>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition active:scale-95"
           >
             <Plus className="w-3.5 h-3.5" />
-            {showAddForm ? 'Close' : 'Add Loan'}
+            <span>{showAddForm ? 'Close' : 'Add Loan'}</span>
           </button>
           {onDeactivate && (
             <button
@@ -104,28 +104,28 @@ export default function LoanEmiHub({ data, onRefresh, activity, onDeactivate }) 
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-4 gap-2 my-4">
-        <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-100 text-center">
-          <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total EMI</div>
-          <div className="text-base font-bold text-slate-900 mt-0.5">₹{Number(totalEmi).toLocaleString()}</div>
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2 my-3 sm:my-4">
+        <div className="bg-slate-50 rounded-xl p-2 sm:p-2.5 border border-slate-100 text-center">
+          <div className="text-[9px] sm:text-[10px] font-semibold text-slate-400 uppercase tracking-wider truncate">Total EMI</div>
+          <div className="text-xs sm:text-base font-bold text-slate-900 mt-0.5 truncate">₹{Number(totalEmi).toLocaleString()}</div>
         </div>
-        <div className="bg-emerald-50/60 rounded-xl p-2.5 border border-emerald-100 text-center">
-          <div className="text-[10px] font-semibold text-emerald-700 uppercase tracking-wider flex items-center justify-center gap-1">
-            <CheckCircle2 className="w-3 h-3" /> Paid
+        <div className="bg-emerald-50/60 rounded-xl p-2 sm:p-2.5 border border-emerald-100 text-center">
+          <div className="text-[9px] sm:text-[10px] font-semibold text-emerald-700 uppercase tracking-wider flex items-center justify-center gap-0.5 sm:gap-1 truncate">
+            <CheckCircle2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" /> <span className="truncate">Paid</span>
           </div>
-          <div className="text-base font-bold text-emerald-900 mt-0.5">{paidCount}</div>
+          <div className="text-xs sm:text-base font-bold text-emerald-900 mt-0.5">{paidCount}</div>
         </div>
-        <div className="bg-amber-50/60 rounded-xl p-2.5 border border-amber-100 text-center">
-          <div className="text-[10px] font-semibold text-amber-700 uppercase tracking-wider flex items-center justify-center gap-1">
-            <Clock className="w-3 h-3" /> Pending
+        <div className="bg-amber-50/60 rounded-xl p-2 sm:p-2.5 border border-amber-100 text-center">
+          <div className="text-[9px] sm:text-[10px] font-semibold text-amber-700 uppercase tracking-wider flex items-center justify-center gap-0.5 sm:gap-1 truncate">
+            <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" /> <span className="truncate">Due</span>
           </div>
-          <div className="text-base font-bold text-amber-900 mt-0.5">{pendingCount}</div>
+          <div className="text-xs sm:text-base font-bold text-amber-900 mt-0.5">{pendingCount}</div>
         </div>
-        <div className="bg-rose-50/60 rounded-xl p-2.5 border border-rose-100 text-center">
-          <div className="text-[10px] font-semibold text-rose-700 uppercase tracking-wider flex items-center justify-center gap-1">
-            <AlertCircle className="w-3 h-3" /> Failed
+        <div className="bg-rose-50/60 rounded-xl p-2 sm:p-2.5 border border-rose-100 text-center">
+          <div className="text-[9px] sm:text-[10px] font-semibold text-rose-700 uppercase tracking-wider flex items-center justify-center gap-0.5 sm:gap-1 truncate">
+            <AlertCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" /> <span className="truncate">Failed</span>
           </div>
-          <div className="text-base font-bold text-rose-900 mt-0.5">{failedCount}</div>
+          <div className="text-xs sm:text-base font-bold text-rose-900 mt-0.5">{failedCount}</div>
         </div>
       </div>
 

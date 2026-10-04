@@ -28,19 +28,20 @@ export default function DateNavigator({ selectedDate, setSelectedDate }) {
   const isToday = selectedDate === new Date().toISOString().split('T')[0];
 
   return (
-    <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-3 shadow-xs">
-      <div className="flex items-center gap-2">
+    <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-3.5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Day Stepper & Current Date */}
+      <div className="flex items-center justify-between sm:justify-start gap-2">
         <button
           onClick={handlePrevDay}
-          className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 transition"
+          className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 active:scale-95 text-slate-700 flex items-center justify-center transition shadow-2xs"
           title="Previous Day"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center gap-2 px-2">
-          <Calendar className="w-4 h-4 text-forest-600" />
-          <span className="text-sm font-bold text-slate-800">{formattedDate}</span>
+        <div className="flex items-center gap-2 px-2 flex-1 sm:flex-initial justify-center sm:justify-start">
+          <Calendar className="w-4 h-4 text-forest-700 shrink-0" />
+          <span className="text-xs sm:text-sm font-bold text-slate-800 whitespace-nowrap">{formattedDate}</span>
           {isToday && (
             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-forest-100 text-forest-800">
               Today
@@ -50,27 +51,28 @@ export default function DateNavigator({ selectedDate, setSelectedDate }) {
 
         <button
           onClick={handleNextDay}
-          className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 transition"
+          className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 active:scale-95 text-slate-700 flex items-center justify-center transition shadow-2xs"
           title="Next Day"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Date Jump & Native Picker */}
+      <div className="flex items-center justify-end gap-2 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100">
         {!isToday && (
           <button
             onClick={handleToday}
-            className="text-xs font-semibold px-2.5 py-1 text-slate-600 hover:text-forest-700 hover:bg-slate-100 rounded-lg transition"
+            className="flex-1 sm:flex-initial text-center text-xs font-bold px-3 py-2 text-forest-700 bg-forest-50 hover:bg-forest-100 border border-forest-200/80 rounded-xl transition active:scale-95"
           >
-            Jump to Today
+            Today
           </button>
         )}
         <input
           type="date"
           value={selectedDate}
           onChange={(e) => e.target.value && setSelectedDate(e.target.value)}
-          className="text-xs border border-slate-200 rounded-lg px-2 py-1 text-slate-600 focus:outline-none focus:ring-1 focus:ring-forest-600"
+          className="text-xs font-medium border border-slate-200 rounded-xl px-2.5 py-2 text-slate-700 bg-slate-50 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-forest-600 transition"
         />
       </div>
     </div>

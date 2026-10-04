@@ -55,17 +55,17 @@ export default function WorkSessionHub({ data, selectedDate, onRefresh, activity
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+    <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">
       
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+      <div className="flex items-center justify-between pb-3.5 sm:pb-4 border-b border-slate-100">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold">
+          <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold shrink-0">
             <Briefcase className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-slate-900">Office Work &amp; Tasks</h2>
-            <p className="text-xs text-slate-500">Hours Logged &amp; Daily Deliverables</p>
+            <h2 className="text-sm sm:text-base font-bold text-slate-900">Office Work &amp; Tasks</h2>
+            <p className="text-[11px] sm:text-xs text-slate-500">Hours Logged &amp; Daily Deliverables</p>
           </div>
         </div>
 
@@ -76,10 +76,10 @@ export default function WorkSessionHub({ data, selectedDate, onRefresh, activity
           <button
             onClick={handleSave}
             disabled={isSubmitting}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-lg shadow-xs transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-lg shadow-xs transition active:scale-95"
           >
             <Save className="w-3.5 h-3.5" />
-            {isSubmitting ? 'Saving...' : 'Save Work'}
+            <span>{isSubmitting ? 'Saving...' : 'Save Work'}</span>
           </button>
           {onDeactivate && (
             <button
