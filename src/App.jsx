@@ -75,6 +75,28 @@ export default function App() {
     }
   }, []);
 
+  // Handle Google OAuth redirect callback (URL hash contains id_token)
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.includes('id_token=')) {
+      const params = new URLSearchParams(hash.substring(1));
+      const idToken = params.get('id_token');
+      if (idToken) {
+        window.history.replaceState(null, '', window.location.pathname);
+        setLoading(true);
+        api.loginWithGoogle(idToken)
+          .then((res) => {
+            setAuth(res.token, res.user);
+            setUser(res.user);
+          })
+          .catch((err) => {
+            setError(err.message || 'Google authentication failed');
+          })
+          .finally(() => setLoading(false));
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (user) {
       loadDashboard();

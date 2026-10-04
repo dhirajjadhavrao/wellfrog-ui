@@ -64,18 +64,36 @@ export default function AuthModal({ initialMode = 'signup', onAuthSuccess, onClo
     }
   };
 
+  const redirectToGoogleOAuth = (clientId) => {
+    const redirectUri = window.location.origin;
+    const nonce = Math.random().toString(36).substring(2);
+    const googleOAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=${encodeURIComponent(clientId.trim())}` +
+      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+      `&response_type=token%20id_token` +
+      `&scope=${encodeURIComponent('openid email profile')}` +
+      `&prompt=select_account` +
+      `&nonce=${nonce}`;
+
+    window.location.href = googleOAuthUrl;
+  };
+
   const handleGoogleClick = () => {
-    if (googleClientId && window.google?.accounts?.id) {
-      window.google.accounts.id.prompt();
+    const activeClientId =
+      import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+      googleClientId ||
+      localStorage.getItem('wellfrog_google_client_id');
+
+    if (activeClientId && activeClientId.trim()) {
+      redirectToGoogleOAuth(activeClientId);
     } else {
-      // Fallback if Google Cloud Client ID hasn't been configured by user in .env
-      const promptEmail = window.prompt(
-        'Enter your Gmail address to sign ' + (mode === 'signup' ? 'up' : 'in') + ' directly with Google:',
-        email || 'dhiraj.jadhavrao@gmail.com'
+      const enteredId = window.prompt(
+        "Google requires an OAuth 2.0 Client ID to open its official login window.\n\n" +
+        "Please enter your Google Client ID (from Google Cloud Console, e.g. 123456789-xxxx.apps.googleusercontent.com):"
       );
-      if (promptEmail) {
-        const promptName = mode === 'signup' ? (window.prompt('Enter your name:', 'Dhiraj Jadhavrao') || 'Google User') : '';
-        submitAuth(promptEmail, promptName, mode === 'signup');
+      if (enteredId && enteredId.trim()) {
+        localStorage.setItem('wellfrog_google_client_id', enteredId.trim());
+        redirectToGoogleOAuth(enteredId.trim());
       }
     }
   };
