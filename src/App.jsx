@@ -75,25 +75,45 @@ export default function App() {
     }
   }, []);
 
-  // Handle Google OAuth redirect callback (URL hash contains id_token)
+  // Handle Google OAuth redirect callback (URL hash contains id_token or access_token)
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash && hash.includes('id_token=')) {
-      const params = new URLSearchParams(hash.substring(1));
-      const idToken = params.get('id_token');
-      if (idToken) {
-        window.history.replaceState(null, '', window.location.pathname);
-        setLoading(true);
-        api.loginWithGoogle(idToken)
-          .then((res) => {
-            setAuth(res.token, res.user);
-            setUser(res.user);
-          })
-          .catch((err) => {
-            setError(err.message || 'Google authentication failed');
-          })
-          .finally(() => setLoading(false));
-      }
+    if (!hash) return;
+
+    const params = new URLSearchParams(hash.substring(1));
+    const idToken = params.get('id_token');
+    const accessToken = params.get('access_token');
+
+    if (idToken) {
+      window.history.replaceState(null, '', window.location.pathname);
+      setLoading(true);
+      api.loginWithGoogle(idToken)
+        .then((res) => {
+          setAuth(res.token, res.user);
+          setUser(res.user);
+        })
+        .catch((err) => {
+          setError(err.message || 'Google authentication failed');
+        })
+        .finally(() => setLoading(false));
+    } else if (accessToken) {
+      window.history.replaceState(null, '', window.location.pathname);
+      setLoading(true);
+      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+        .then((r) => r.json())
+        .then((googleUser) => {
+          return api.emailAuth(googleUser.email, googleUser.name, true);
+        })
+        .then((res) => {
+          setAuth(res.token, res.user);
+          setUser(res.user);
+        })
+        .catch((err) => {
+          setError(err.message || 'Google authentication failed');
+        })
+        .finally(() => setLoading(false));
     }
   }, []);
 
@@ -223,9 +243,9 @@ export default function App() {
               </div>
             </div>
 
-            {/* Summary Highlights Pill Bar */}
+            {/* Summary Highlights Pill Bar (5 Core Activities) */}
             {dashboardData && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between">
                   <div>
                     <span className="text-[11px] font-semibold text-slate-500 uppercase">Today's Spend</span>
@@ -281,6 +301,20 @@ export default function App() {
                     🏦
                   </div>
                 </div>
+
+                <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between col-span-2 sm:col-span-1">
+                  <div>
+                    <span className="text-[11px] font-semibold text-slate-500 uppercase">Naukri Pipeline</span>
+                    <div className="text-xs font-bold text-slate-800 mt-1 flex items-center gap-1.5">
+                      <span className="text-blue-700">{dashboardData.jobs?.appliedCount || 0} Applied</span>
+                      <span>•</span>
+                      <span className="text-amber-700">{dashboardData.jobs?.interviewCount || 0} Int.</span>
+                    </div>
+                  </div>
+                  <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-semibold text-sm">
+                    🎯
+                  </div>
+                </div>
               </div>
             )}
 
@@ -298,9 +332,9 @@ export default function App() {
               </div>
             )}
 
-            {/* 5 Core Hubs Layout */}
+            {/* 5 Core Activities Grid (Uniform Card Dimensions) */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Hub 1: Daily Spend (Online & Offline) */}
+              {/* Activity 1: Daily Spend (Online & Offline) */}
               <div className="w-full">
                 <FinanceHub
                   data={dashboardData?.finance}
@@ -309,7 +343,7 @@ export default function App() {
                 />
               </div>
 
-              {/* Hub 2: Loans & EMIs Tracker */}
+              {/* Activity 2: Loans & EMIs Tracker */}
               <div className="w-full">
                 <LoanEmiHub
                   data={dashboardData?.loans}
@@ -317,7 +351,7 @@ export default function App() {
                 />
               </div>
 
-              {/* Hub 3: Fitness & Workout Sessions */}
+              {/* Activity 3: Fitness & Workout Sessions */}
               <div className="w-full">
                 <WorkoutHub
                   data={dashboardData?.workouts}
@@ -326,7 +360,7 @@ export default function App() {
                 />
               </div>
 
-              {/* Hub 4: Office Work Time & Interactive Tasks */}
+              {/* Activity 4: Office Work Time & Interactive Tasks */}
               <div className="w-full">
                 <WorkSessionHub
                   data={dashboardData?.work}
@@ -335,8 +369,8 @@ export default function App() {
                 />
               </div>
 
-              {/* Hub 5: Naukri & Career Applications Pipeline (Full width or Col span 2) */}
-              <div className="w-full lg:col-span-2">
+              {/* Activity 5: Naukri & Career Applications */}
+              <div className="w-full">
                 <NaukriHub
                   data={dashboardData?.jobs}
                   onRefresh={loadDashboard}
