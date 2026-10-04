@@ -323,14 +323,18 @@ export default function App() {
                     );
                   }
                   if (act.categoryType === 'LOANS') {
+                    const nearDue = dashboardData.loans?.nearDueCount || 0;
                     return (
                       <div key={act.id} className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between">
                         <div>
-                          <span className="text-[11px] font-semibold text-slate-500 uppercase">EMI Status</span>
-                          <div className="text-xs font-bold text-slate-800 mt-1 flex items-center gap-2">
+                          <span className="text-[11px] font-semibold text-slate-500 uppercase">EMI &amp; Cards</span>
+                          <div className="text-xs font-bold text-slate-800 mt-1 flex items-center gap-1.5 flex-wrap">
                             <span className="text-emerald-700">{dashboardData.loans?.paidCount || 0} Paid</span>
                             <span>•</span>
-                            <span className="text-amber-700">{dashboardData.loans?.pendingCount || 0} Due</span>
+                            <span className={nearDue > 0 ? 'text-amber-700 font-extrabold' : 'text-slate-600'}>
+                              {dashboardData.loans?.pendingCount || 0} Due
+                              {nearDue > 0 && ` (${nearDue} near)`}
+                            </span>
                           </div>
                         </div>
                         <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-semibold text-sm">
@@ -445,6 +449,7 @@ export default function App() {
                           <LoanEmiHub
                             activity={act}
                             data={dashboardData?.loans}
+                            selectedDate={selectedDate}
                             onRefresh={loadDashboard}
                             onDeactivate={handleDeactivateActivity}
                           />

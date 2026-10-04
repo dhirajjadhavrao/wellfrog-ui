@@ -68,6 +68,7 @@ export const api = {
   // Loans & EMIs (Paid / Failed / Pending)
   getLoans: () => request('/loans'),
   addLoan: (data) => request('/loans', { method: 'POST', body: JSON.stringify(data) }),
+  updateLoan: (id, data) => request(`/loans/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   updateLoanStatus: (id, status) => request(`/loans/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }),
   deleteLoan: (id) => request(`/loans/${id}`, { method: 'DELETE' }),
 
