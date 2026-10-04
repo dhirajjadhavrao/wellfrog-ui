@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Layers, FolderPlus, Check, AlertCircle, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { api } from '../api';
+import ActivityIcon, { getActivityEmoji } from './ActivityIcon';
 
 export default function ActivityManagerModal({ isOpen, onClose, onActivityChanged }) {
   const [activities, setActivities] = useState([]);
@@ -52,7 +53,7 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
 
   const handleOpenAddSub = (parentActivity) => {
     setParentId(parentActivity.id.toString());
-    setIcon(parentActivity.icon || '⚡');
+    setIcon(getActivityEmoji(parentActivity.icon, parentActivity.categoryType));
     setColor(parentActivity.color || '#22c55e');
     setShowAddForm(true);
   };
@@ -210,7 +211,7 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
                     <option value="">-- None (Top-Level Dashboard Tile) --</option>
                     {rootActivities.map((act) => (
                       <option key={act.id} value={act.id}>
-                        {act.icon} {act.name}
+                        {getActivityEmoji(act.icon, act.categoryType)} {act.name}
                       </option>
                     ))}
                   </select>
@@ -337,12 +338,12 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
                       {/* Root Item Bar */}
                       <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <span
-                            className="text-xl w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 border border-slate-200 shadow-2xs shrink-0"
+                          <div
+                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 border border-slate-200 shadow-2xs shrink-0"
                             style={{ color: act.color || '#386641' }}
                           >
-                            {act.icon || '📌'}
-                          </span>
+                            <ActivityIcon icon={act.icon} categoryType={act.categoryType} className="w-5 h-5" fallback="📌" />
+                          </div>
                           <div>
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="text-sm font-bold text-slate-900">{act.name}</span>
@@ -429,7 +430,9 @@ export default function ActivityManagerModal({ isOpen, onClose, onActivityChange
                               className="flex items-center justify-between p-2 rounded-xl bg-slate-50/80 border border-slate-200/60 hover:bg-slate-100/70 transition"
                             >
                               <div className="flex items-center gap-2.5">
-                                <span className="text-base">{sub.icon || '🔹'}</span>
+                                <div className="w-5 h-5 flex items-center justify-center text-slate-700 shrink-0">
+                                  <ActivityIcon icon={sub.icon} categoryType={sub.categoryType} className="w-4 h-4" fallback="🔹" />
+                                </div>
                                 <span className="text-xs font-semibold text-slate-800">{sub.name}</span>
                                 <span className="text-[10px] text-slate-400 font-medium">({sub.unit})</span>
                               </div>

@@ -8,6 +8,7 @@ import WorkSessionHub from './components/WorkSessionHub';
 import NaukriHub from './components/NaukriHub';
 import CustomActivityHub from './components/CustomActivityHub';
 import ActivityManagerModal from './components/ActivityManagerModal';
+import ActivityIcon from './components/ActivityIcon';
 import { api, getCurrentUser, getToken, clearAuth, setAuth } from './api';
 import { 
   Sparkles, 
@@ -373,7 +374,7 @@ export default function App() {
                         className="w-9 h-9 rounded-lg flex items-center justify-center text-base font-bold shadow-2xs border border-slate-100"
                         style={{ backgroundColor: `${act.color || '#386641'}15`, color: act.color || '#386641' }}
                       >
-                        {act.icon || '⚡'}
+                        <ActivityIcon icon={act.icon} categoryType={act.categoryType} className="w-4 h-4" fallback="⚡" />
                       </div>
                     </div>
                   );

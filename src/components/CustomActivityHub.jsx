@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, CheckCircle2, Clock, Trash2, EyeOff, Layers, ChevronDown } from 'lucide-react';
 import { api } from '../api';
+import ActivityIcon, { getActivityEmoji } from './ActivityIcon';
 
 export default function CustomActivityHub({
   activity,
@@ -97,7 +98,7 @@ export default function CustomActivityHub({
               className="w-10 h-10 rounded-xl flex items-center justify-center text-xl font-bold shadow-2xs border border-slate-200/60"
               style={{ backgroundColor: `${themeColor}15`, color: themeColor }}
             >
-              {activity?.icon || '⚡'}
+              <ActivityIcon icon={activity?.icon} categoryType={activity?.categoryType} className="w-5 h-5" fallback="⚡" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -185,7 +186,7 @@ export default function CustomActivityHub({
                     <option value="">-- General ({activity.name}) --</option>
                     {subActivities.map((sub) => (
                       <option key={sub.id} value={sub.id}>
-                        {sub.icon} {sub.name}
+                        {getActivityEmoji(sub.icon, sub.categoryType)} {sub.name}
                       </option>
                     ))}
                   </select>
@@ -258,8 +259,9 @@ export default function CustomActivityHub({
                             {formatUnitValue(log.numericValue, activity?.unit)}
                           </span>
                           {sub && (
-                            <span className="text-[10px] font-semibold px-2 py-0.5 bg-white border border-slate-200 text-slate-600 rounded-md">
-                              {sub.icon} {sub.name}
+                            <span className="text-[10px] font-semibold px-2 py-0.5 bg-white border border-slate-200 text-slate-600 rounded-md inline-flex items-center gap-1">
+                              <ActivityIcon icon={sub.icon} categoryType={sub.categoryType} className="w-3 h-3" fallback="🔹" />
+                              <span>{sub.name}</span>
                             </span>
                           )}
                         </div>
