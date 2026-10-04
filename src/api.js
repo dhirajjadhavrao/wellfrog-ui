@@ -51,7 +51,9 @@ async function request(endpoint, options = {}) {
 
 export const api = {
   // Auth
+  getAuthConfig: () => request('/auth/config'),
   loginWithGoogle: (idToken) => request('/auth/google', { method: 'POST', body: JSON.stringify({ idToken }) }),
+  emailAuth: (email, name, isSignUp) => request('/auth/email-auth', { method: 'POST', body: JSON.stringify({ email, name, isSignUp }) }),
   devLogin: (email, name) => request('/auth/dev-login', { method: 'POST', body: JSON.stringify({ email, name }) }),
   getMe: () => request('/auth/me'),
 

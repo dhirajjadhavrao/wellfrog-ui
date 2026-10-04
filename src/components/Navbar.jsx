@@ -2,21 +2,8 @@ import React, { useState } from 'react';
 import { LogOut, User as UserIcon, Plus, Sparkles, Layers } from 'lucide-react';
 import { api, setAuth, clearAuth } from '../api';
 
-export default function Navbar({ user, setUser, onOpenActivityManager }) {
+export default function Navbar({ user, setUser, onOpenActivityManager, onOpenAuth }) {
   const [loading, setLoading] = useState(false);
-
-  const handleDevLogin = async () => {
-    setLoading(true);
-    try {
-      const res = await api.devLogin('dhiraj.jadhavrao@gmail.com', 'Dhiraj Jadhavrao');
-      setAuth(res.token, res.user);
-      setUser(res.user);
-    } catch (e) {
-      alert('Login failed: ' + e.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLogout = () => {
     clearAuth();
@@ -73,14 +60,18 @@ export default function Navbar({ user, setUser, onOpenActivityManager }) {
               </div>
             </>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <button
-                onClick={handleDevLogin}
-                disabled={loading}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-forest-600 hover:bg-forest-700 rounded-lg shadow-xs transition"
+                onClick={() => onOpenAuth && onOpenAuth('signin')}
+                className="px-3.5 py-1.5 text-xs font-bold text-slate-700 hover:text-forest-700 hover:bg-slate-100 rounded-xl transition"
               >
-                <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-                {loading ? 'Logging in...' : 'Sign In as Dhiraj'}
+                Sign In
+              </button>
+              <button
+                onClick={() => onOpenAuth && onOpenAuth('signup')}
+                className="px-4 py-1.5 text-xs font-bold text-white bg-forest-600 hover:bg-forest-700 rounded-xl shadow-xs transition"
+              >
+                Sign Up
               </button>
             </div>
           )}

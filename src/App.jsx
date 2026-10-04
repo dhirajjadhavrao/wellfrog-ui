@@ -22,6 +22,8 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
+import AuthModal from './components/AuthModal';
+
 export default function App() {
   const [user, setUser] = useState(getCurrentUser());
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
@@ -29,6 +31,8 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState('signup');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Load Dashboard Data
   const loadDashboard = useCallback(async () => {
@@ -77,15 +81,9 @@ export default function App() {
     }
   }, [user, loadDashboard]);
 
-  // Fast Dev Login shortcut
-  const handleDevLogin = async () => {
-    try {
-      const res = await api.devLogin('dhiraj.jadhavrao@gmail.com', 'Dhiraj Jadhavrao');
-      setAuth(res.token, res.user);
-      setUser(res.user);
-    } catch (e) {
-      alert('Login failed: ' + e.message);
-    }
+  const handleOpenAuth = (mode) => {
+    setAuthMode(mode);
+    setIsAuthModalOpen(true);
   };
 
   return (
@@ -95,81 +93,80 @@ export default function App() {
         user={user}
         setUser={setUser}
         onOpenActivityManager={() => setIsActivityModalOpen(true)}
+        onOpenAuth={handleOpenAuth}
       />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {!user ? (
-          /* Unauthenticated Landing / Fast Login View */
-          <div className="max-w-3xl mx-auto py-12 text-center space-y-8 animate-in fade-in duration-300">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-forest-600 text-white text-4xl shadow-xl shadow-forest-600/20">
-              🐸
-            </div>
-
-            <div className="space-y-3">
+          /* Unauthenticated Landing / Sign In & Sign Up Screen */
+          <div className="py-6 space-y-10 animate-in fade-in duration-300">
+            {/* Top Hero copy */}
+            <div className="max-w-2xl mx-auto text-center space-y-2">
               <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                Master your daily life with <span className="text-forest-700">Wellfrog</span>
+                Welcome to <span className="text-forest-700">Wellfrog</span>
               </h1>
-              <p className="text-base text-slate-600 max-w-xl mx-auto">
-                A personal activity and routine tracker. Track your daily spend (online &amp; cash), loan EMIs,
-                fitness workouts, office hours &amp; tasks, and job application pipeline — all in one minimal workspace.
+              <p className="text-sm text-slate-600">
+                Track your daily spend (online &amp; cash), loans &amp; EMIs, workout routines, office tasks, and job applications.
               </p>
             </div>
 
-            {/* Hub Previews */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2 text-left">
-              <div className="p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mb-2">
-                  <Wallet className="w-4 h-4" />
-                </div>
-                <h4 className="text-xs font-bold text-slate-800">Daily Spend</h4>
-                <p className="text-[11px] text-slate-500 mt-0.5">Online UPI &amp; Cash split</p>
-              </div>
-
-              <div className="p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center mb-2">
-                  <Landmark className="w-4 h-4" />
-                </div>
-                <h4 className="text-xs font-bold text-slate-800">Loans &amp; EMIs</h4>
-                <p className="text-[11px] text-slate-500 mt-0.5">Paid, pending, failed alerts</p>
-              </div>
-
-              <div className="p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs">
-                <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center mb-2">
-                  <Dumbbell className="w-4 h-4" />
-                </div>
-                <h4 className="text-xs font-bold text-slate-800">Workouts</h4>
-                <p className="text-[11px] text-slate-500 mt-0.5">Routines &amp; duration logs</p>
-              </div>
-
-              <div className="p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs">
-                <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center mb-2">
-                  <Briefcase className="w-4 h-4" />
-                </div>
-                <h4 className="text-xs font-bold text-slate-800">Office Work</h4>
-                <p className="text-[11px] text-slate-500 mt-0.5">Hours &amp; task checklists</p>
-              </div>
-
-              <div className="p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs col-span-2 sm:col-span-1">
-                <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center mb-2">
-                  <Target className="w-4 h-4" />
-                </div>
-                <h4 className="text-xs font-bold text-slate-800">Naukri Pipeline</h4>
-                <p className="text-[11px] text-slate-500 mt-0.5">Applications &amp; rounds</p>
-              </div>
+            {/* Embedded Auth Card with Sign In / Sign Up Tabs & Google Login */}
+            <div className="max-w-md mx-auto">
+              <AuthModal
+                isModal={false}
+                initialMode={authMode}
+                onAuthSuccess={(loggedUser) => setUser(loggedUser)}
+              />
             </div>
 
-            {/* Quick Login Actions */}
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button
-                onClick={handleDevLogin}
-                className="w-full sm:w-auto px-6 py-3 bg-forest-600 hover:bg-forest-700 text-white font-bold text-sm rounded-xl shadow-md shadow-forest-600/20 transition flex items-center justify-center gap-2"
-              >
-                <Sparkles className="w-4 h-4 text-yellow-300" />
-                Sign In as Dhiraj (Dev Login)
-              </button>
+            {/* 5 Core Hubs Features Preview */}
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Everything you track in one place</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-left">
+                <div className="p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mb-2 font-bold">
+                    ₹
+                  </div>
+                  <h4 className="text-xs font-bold text-slate-800">Daily Spend</h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Online UPI &amp; Cash split</p>
+                </div>
+
+                <div className="p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center mb-2">
+                    <Landmark className="w-4 h-4" />
+                  </div>
+                  <h4 className="text-xs font-bold text-slate-800">Loans &amp; EMIs</h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Paid, pending, failed alerts</p>
+                </div>
+
+                <div className="p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs">
+                  <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center mb-2">
+                    <Dumbbell className="w-4 h-4" />
+                  </div>
+                  <h4 className="text-xs font-bold text-slate-800">Workouts</h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Routines &amp; duration logs</p>
+                </div>
+
+                <div className="p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs">
+                  <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center mb-2">
+                    <Briefcase className="w-4 h-4" />
+                  </div>
+                  <h4 className="text-xs font-bold text-slate-800">Office Work</h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Hours &amp; task checklists</p>
+                </div>
+
+                <div className="p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs col-span-2 sm:col-span-1">
+                  <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center mb-2">
+                    <Target className="w-4 h-4" />
+                  </div>
+                  <h4 className="text-xs font-bold text-slate-800">Naukri Pipeline</h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Applications &amp; rounds</p>
+                </div>
+              </div>
             </div>
-            <p className="text-xs text-slate-400">Multi-tenant ready: Google OAuth &amp; auto-seeding on first login</p>
           </div>
         ) : (
           /* Authenticated Dashboard View */
@@ -348,6 +345,19 @@ export default function App() {
         onClose={() => setIsActivityModalOpen(false)}
         onActivityChanged={loadDashboard}
       />
+
+      {/* Auth Modal (when triggered from Navbar) */}
+      {isAuthModalOpen && !user && (
+        <AuthModal
+          isModal={true}
+          initialMode={authMode}
+          onAuthSuccess={(loggedUser) => {
+            setUser(loggedUser);
+            setIsAuthModalOpen(false);
+          }}
+          onClose={() => setIsAuthModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
